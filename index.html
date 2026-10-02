@@ -92,6 +92,9 @@ body.print .art,body.print .beam,body.print .flame,body.print .drift{animation:n
 .tourbar button{background:var(--paper-2);border:1px solid var(--ink-soft);border-radius:2px;padding:4px 10px;cursor:pointer;font-size:13.5px}
 .voyage{display:block;width:100%;margin:6px 0 4px;padding:10px 12px;background:var(--ink);color:var(--paper-2);border:0;border-radius:2px;font-family:var(--display);letter-spacing:.12em;font-size:15px;cursor:pointer}
 .voyage:hover{background:#56402a}
+.voyage{border-radius:12px;padding:12px 14px;background:linear-gradient(#6b5136,#3f2d1c);border:1px solid #2a1d10;box-shadow:inset 0 1px 0 rgba(255,240,210,.35),0 2px 0 #2a1d10,0 5px 12px rgba(40,25,10,.35);transition:transform .08s,box-shadow .08s}
+.voyage:hover{background:linear-gradient(#7a5d3e,#4a3522);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,240,210,.35),0 3px 0 #2a1d10,0 8px 16px rgba(40,25,10,.4)}
+.voyage:active{transform:translateY(2px);box-shadow:inset 0 2px 4px rgba(0,0,0,.35),0 0 0 #2a1d10,0 1px 3px rgba(40,25,10,.3)}
 .lm .hit{fill:transparent}
 .pk{fill:#f3e8cc;stroke:var(--ink);stroke-width:1.15;stroke-linejoin:round}
 .pk-sh{fill:var(--ink);opacity:.18}
@@ -499,11 +502,11 @@ const L=[
  lim:"The peak age and shape vary by type of offense, and a small group offends persistently.",
  src:[["Hirschi & Gottfredson (1983), American Journal of Sociology","10.1086/227905"],["Farrington (1986), Crime and Justice","10.1086/449114"]]},
 {id:"discrim",c:"society",x:984,y:780,tier:3,label:"Hiring|Discrimination",
- claim:"Equally qualified applicants get fewer callbacks because of race",term:"Field experiments (audit and correspondence studies)",
+ claim:"Equally qualified applicants get fewer callbacks when their name suggests they are non-white",term:"Field experiments (audit and correspondence studies)",
  text:"Researchers send employers identical résumés that differ only in the applicant's apparent race or ethnicity. Callback gaps appear again and again.",
- nums:"Across US field experiments since 1989, white applicants received 36% more callbacks than equally qualified Black applicants, with no decline over 25 years. A study of 83,000 applications to 108 large US employers found the gap concentrated in a subset of firms.",
+ nums:"Across US field experiments since 1989, white applicants received 36% more callbacks than equally qualified Black applicants, with no decline over 25 years, and about 24% more than Latino applicants. Across 97 field experiments in 9 countries, nonwhite applicants of African, Middle Eastern and North African, Asian and Latin American origin all received fewer callbacks; gaps were largest in France and Sweden. In Canada, résumés with English names got about 35% more callbacks than identical ones with Chinese, Indian or Pakistani names. The size of the gap differs by group and country. A US study of 83,000 applications to 108 large US employers found the gap concentrated in a subset of firms.",
  lim:"Callbacks are only the first step of hiring; these experiments cannot observe later stages directly.",
- src:[["Bertrand & Mullainathan (2004), American Economic Review","10.1257/0002828042002561"],["Quillian et al. (2017), PNAS","10.1073/pnas.1706255114"],["Kline, Rose & Walters (2022), Quarterly Journal of Economics","10.1093/qje/qjac024"]]},
+ src:[["Bertrand & Mullainathan (2004), American Economic Review","10.1257/0002828042002561"],["Quillian et al. (2017), PNAS","10.1073/pnas.1706255114"],["Kline, Rose & Walters (2022), Quarterly Journal of Economics","10.1093/qje/qjac024"],["Quillian, Heath, Pager, Midtbøen, Fleischmann & Hexel (2019), Sociological Science","10.15195/v6.a18"],["Oreopoulos (2011), American Economic Journal: Economic Policy","10.1257/pol.3.4.148"]]},
 {id:"schooling",c:"society",x:842,y:772,tier:2,label:"Returns to|Schooling",
  claim:"More schooling raises earnings",term:"Returns to education",
  text:"Each additional year of schooling raises earnings. Studies using natural experiments, such as changes in school-leaving age, find returns similar to or larger than simple comparisons.",
@@ -1512,7 +1515,7 @@ proximity:"People become friends with those who|live or sit nearby, and with tho
 homophily:"Friendships and social networks sort|by similarity: race, age, religion,|education",
 weakties:"Acquaintances, more than close|friends, bring new information|and job leads",
 agecrime:"Crime rises through the teens,|peaks in the late teens and early|20s, then declines",
-discrim:"Identical résumés get fewer callbacks|when the applicant's name suggests|they are Black (field experiments)",
+discrim:"Identical résumés get fewer callbacks|when the applicant's name suggests|they are non-white (field experiments)",
 schooling:"Each extra year of school raises|earnings by about 9%, on average|worldwide",
 neighborhood:"Children who move from high- to lower-poverty|neighborhoods earn more as adults",
 income:"Happiness keeps rising with income,|but each extra dollar matters less|the more you already have",
@@ -3600,7 +3603,7 @@ let selected=null;
 function select(id,fly){
   const d=byId[id];if(!d)return;
   document.querySelectorAll(".lm.sel,.rv.sel").forEach(e=>e.classList.remove("sel"));
-  const el=svg.querySelector(`[data-id="${id}"]`);if(el)el.classList.add("sel");
+  const el=svg.querySelector(`[data-id="${id}"]`);if(el)el.classList.add("sel");if(d.kind)[d.from,d.to].forEach(k=>{const e=svg.querySelector(`[data-id="${k}"]`);if(e)e.classList.add("sel");});
   selected=id;
   let s=`<button class="back" id="back">← All findings</button>`;
   if(d.kind){
@@ -3622,8 +3625,8 @@ function select(id,fly){
   panel.scrollTop=0;
   document.getElementById("back").addEventListener("click",clearSel);
   if(fly){
-    let cx,cy;if(d.kind){const m=d.pts[Math.floor(d.pts.length/2)];cx=m[0];cy=m[1];}else{cx=d.x;cy=d.y-10;}
-    flyTo(CW/2+(cx-MCX)*MK,CH/2+(cy-MCY)*MK,Math.min(vb.w,720*MK));
+    let cx,cy,fw=720;if(d.kind){const a=byId[d.from],b=byId[d.to];const x0=Math.min(a.x,b.x),x1=Math.max(a.x,b.x),y0=Math.min(a.y,b.y)-110,y1=Math.max(a.y,b.y)+150;cx=(x0+x1)/2;cy=(y0+y1)/2;fw=Math.max(720,x1-x0+420,(y1-y0+200)*TW/CHT);}else{cx=d.x;cy=d.y-10;}
+    flyTo(CW/2+(cx-MCX)*MK,CH/2+(cy-MCY)*MK,Math.min(vb.w,fw*MK));
     if(window.matchMedia("(max-width:860px)").matches)document.getElementById("mapwrap").scrollIntoView({behavior:"smooth"});
   }
 }
