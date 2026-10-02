@@ -169,17 +169,17 @@ body.print .poster-bar{display:none}
       <button id="zin" aria-label="Zoom in" title="Zoom in">+</button>
       <button id="zout" aria-label="Zoom out" title="Zoom out">−</button>
       <button id="zreset" aria-label="Show whole chart" title="Show whole chart">⤢</button>
-      <button id="explore" title="Fly to a random place">Explore</button>
-      <a href="#poster" title="Open the printable poster with every entry">Poster view</a>
+      
+      
     </div>
   </div>
 
   <aside class="panel" id="panel">
     <div id="intro">
       <h1>The Known Mind &amp; Society</h1>
-      <p class="lede">A map of what psychology and sociology know with confidence. It shows only findings backed by many studies: large reviews that combine many studies (meta-analyses), repeat studies run by many labs, or large real-world experiments. Each finding is a picture; click one to read what it means, the key numbers, its limits and its sources.</p>
+      <p class="lede">A map of what psychology and sociology know with confidence. It shows findings that sharpen judgment, curb errors, or spark curiosity and creativity, and only those backed by many studies: large reviews that combine many studies (meta-analyses), repeat studies run by many labs, or large real-world experiments. Each finding is a picture; click one to read what it means, the key numbers, its limits and its sources.</p>
 
-      <button class="voyage" id="voyage">Take a guided tour (18 stops)</button>
+      <button class="voyage" id="explore" title="Fly to a random finding">Explore</button><p style="text-align:center;margin:2px 0 10px;font-size:13.5px;font-style:italic;color:var(--ink-soft)">Land on a random finding. Click again for another.</p>
       <div class="sect">How to read the map</div>
       <ul class="legend" id="legendList"></ul>
 
@@ -3605,7 +3605,7 @@ function select(id,fly){
   document.querySelectorAll(".lm.sel,.rv.sel").forEach(e=>e.classList.remove("sel"));
   const el=svg.querySelector(`[data-id="${id}"]`);if(el)el.classList.add("sel");if(d.kind)[d.from,d.to].forEach(k=>{const e=svg.querySelector(`[data-id="${k}"]`);if(e)e.classList.add("sel");});
   selected=id;
-  let s=`<button class="back" id="back">← All findings</button>`;
+  let s=`<button class="back" id="back">← All findings</button><button class="voyage" data-explore="1" style="margin-top:10px">Explore</button><p style="text-align:center;margin:2px 0 10px;font-size:13.5px;font-style:italic;color:var(--ink-soft)">Land on a random finding. Click again for another.</p>`;
   if(d.kind){
     s+=`<div class="eyebrow">${d.kind==="lane"?"Dashed line":"River"} · cause and effect</div><h2>${d.claim}</h2>`;
     s+=`<p class="term">From <i>${byId[d.from].label.replace("|"," ")}</i> to <i>${byId[d.to].label.replace("|"," ")}</i></p>`;
@@ -3678,7 +3678,7 @@ function tourGo(i){tourIdx=(i+TOUR.length)%TOUR.length;const [id,note]=TOUR[tour
   document.getElementById("tprev").onclick=()=>tourGo(tourIdx-1);
   document.getElementById("tnext").onclick=()=>{if(tourIdx===TOUR.length-1){tourIdx=-1;clearSel();animateTo({x:0,y:0,w:TW,h:CHT});}else tourGo(tourIdx+1);};
 }
-document.getElementById("voyage").onclick=()=>tourGo(0);
+
 
 /* ---------------- Hover preview ---------------- */
 const tip=document.getElementById("tip"),wrap=document.getElementById("mapwrap");
@@ -3707,7 +3707,7 @@ RIVERS.forEach(r=>pi+=`<div class="pi"><h4>${r.label}</h4><p class="t">${r.kind=
 pi+="</div>";
 document.getElementById("posterIndex").innerHTML=pi;
 
-window.__KM={select:(i,f)=>select(i,f),byId,L,SNIP:(typeof SNIP!=="undefined"?SNIP:{})};function applyHash(){const p=location.hash==="#poster";document.body.classList.toggle("poster",p);if(p){vb={x:0,y:0,w:TW,h:CHT};setVB();}window.scrollTo(0,0);}
+window.__KM={select:(i,f)=>select(i,f),byId,L,SNIP:(typeof SNIP!=="undefined"?SNIP:{})};document.addEventListener("click",e=>{if(e.target.closest("[data-explore]")){const x=document.getElementById("explore");if(x)x.click();}});function applyHash(){const p=location.hash==="#poster";document.body.classList.toggle("poster",p);if(p){vb={x:0,y:0,w:TW,h:CHT};setVB();}window.scrollTo(0,0);}
 window.addEventListener("hashchange",applyHash);applyHash();
 }
 })();
